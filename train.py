@@ -59,7 +59,14 @@ EARLY_STOPPING_ROUNDS = 50
 # ---------------------------------------------------------------------------
 
 # None = 全特徴量を使用。リストで指定すると選択的に使用
-SELECTED_FEATURES = None
+# 下位5特徴量を除外（短期ノイズ: sma_dev_5, ret_5d, ret_5d_sector_rel, rel_nikkei_20d, rsi_14）
+SELECTED_FEATURES = [
+    "volatility_60d", "low_60d_pct", "ret_60d_sector_rel", "volatility_20d",
+    "high_60d_pct", "ret_60d", "macd", "high_20d_pct", "macd_signal",
+    "ret_20d_sector_rel", "low_20d_pct", "bb_bandwidth", "volume_ratio_5_20",
+    "sma_dev_60", "ret_20d", "macd_hist", "rel_topix_60d", "bb_pct_b",
+    "rel_nikkei_60d", "sma_dev_20", "rel_topix_20d",
+]
 
 # ---------------------------------------------------------------------------
 # Model Training
