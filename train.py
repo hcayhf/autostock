@@ -83,7 +83,9 @@ def train_model(X_train, y_train, feature_names):
     else:
         use_features = feature_names
 
-    X = X_train[use_features].values
+    # 特徴量をクロスセクショナルランク化（日付ごと、外れ値耐性UP）
+    X_ranked = X_train[use_features].groupby(level="Date").rank(pct=True)
+    X = X_ranked.values
     # ターゲットをクロスセクショナルランク（日付ごと）に変換
     y = y_train.groupby(level="Date").rank(pct=True)
 
@@ -140,7 +142,8 @@ def predict_scores(model, X, feature_names):
     Returns:
         pd.Series: スコア (index = X.index)
     """
-    X_vals = X[feature_names].values
+    X_ranked = X[feature_names].groupby(level="Date").rank(pct=True)
+    X_vals = X_ranked.values
     X_vals = np.nan_to_num(X_vals, nan=np.nan, posinf=np.nan, neginf=np.nan)
     scores = model.predict(X_vals)
     return pd.Series(scores, index=X.index, name="score")
