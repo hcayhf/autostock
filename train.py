@@ -109,19 +109,16 @@ def train_model(X_train, y_train, feature_names):
 
     callbacks = [
         lgb.log_evaluation(period=100),
-        lgb.early_stopping(stopping_rounds=EARLY_STOPPING_ROUNDS),
     ]
 
     model = lgb.train(
         LGB_PARAMS,
         dtrain,
         num_boost_round=NUM_BOOST_ROUND,
-        valid_sets=[dval],
-        valid_names=["val"],
         callbacks=callbacks,
     )
 
-    print(f"  Best iteration: {model.best_iteration}")
+    print(f"  Rounds trained: {model.num_trees()}")
 
     return model, use_features
 
