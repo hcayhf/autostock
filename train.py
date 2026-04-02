@@ -59,11 +59,10 @@ EARLY_STOPPING_ROUNDS = 50
 # ---------------------------------------------------------------------------
 
 # None = 全特徴量を使用。リストで指定すると選択的に使用
-# 上位10特徴量のみ（imp>=2000）
+# 上位5特徴量のみ（imp>=3500）
 SELECTED_FEATURES = [
     "volatility_60d", "low_60d_pct", "volatility_20d", "ret_60d_sector_rel",
-    "high_60d_pct", "ret_60d", "macd", "high_20d_pct", "macd_signal",
-    "ret_20d_sector_rel",
+    "high_60d_pct",
 ]
 
 # ---------------------------------------------------------------------------
