@@ -15,6 +15,7 @@ import lightgbm as lgb
 
 from prepare import (
     get_train_test_split,
+    load_universe,
     evaluate,
     print_evaluation,
     DEFAULT_TOP_N,
@@ -30,6 +31,7 @@ warnings.filterwarnings("ignore")
 FORWARD_DAYS = DEFAULT_FORWARD_DAYS  # ターゲット: N営業日後リターン
 TOP_N = DEFAULT_TOP_N                # 上位何銘柄を評価するか
 INCLUDE_SECTOR_REL = True            # セクター相対強度を含めるか
+PRIME_ONLY = True                    # メモリ制約: プライム銘柄のみ使用
 
 # LightGBM ハイパーパラメータ
 LGB_PARAMS = {
@@ -179,8 +181,15 @@ def main():
 
     # --- Step 1: データ取得 ---
     print("Step 1: Loading train/test data...")
+    tickers = None
+    if PRIME_ONLY:
+        universe = load_universe()
+        prime_tickers = universe[universe["market"] == "プライム（内国株式）"]["ticker"].tolist()
+        tickers = prime_tickers
+        print(f"  Using Prime only: {len(tickers)} tickers")
     data = get_train_test_split(
         forward_days=FORWARD_DAYS,
+        tickers=tickers,
         include_sector_rel=INCLUDE_SECTOR_REL,
     )
 
