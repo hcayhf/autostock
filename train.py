@@ -39,7 +39,7 @@ LGB_PARAMS = {
     "metric": "mae",
     "boosting_type": "gbdt",
     "num_leaves": 31,
-    "learning_rate": 0.03,
+    "learning_rate": 0.01,
     "feature_fraction": 0.8,
     "bagging_fraction": 0.8,
     "bagging_freq": 5,
