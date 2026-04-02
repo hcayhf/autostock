@@ -70,7 +70,7 @@ SELECTED_FEATURES = [
 # Model Training
 # ---------------------------------------------------------------------------
 
-def train_model(X_train, y_train, feature_names):
+def train_model(X_train, y_train, feature_names, lgb_params=None):
     """
     LightGBMモデルを訓練する。
 
@@ -78,10 +78,13 @@ def train_model(X_train, y_train, feature_names):
         X_train: 訓練特徴量 (DataFrame, MultiIndex: Date x ticker)
         y_train: 訓練ターゲット (Series)
         feature_names: 特徴量名リスト
+        lgb_params: LGBMパラメータ（Noneの場合はLGB_PARAMSを使用）
 
     Returns:
         trained model (lgb.Booster)
     """
+    if lgb_params is None:
+        lgb_params = LGB_PARAMS
     # 特徴量選択
     if SELECTED_FEATURES is not None:
         use_features = [f for f in SELECTED_FEATURES if f in feature_names]
@@ -120,7 +123,7 @@ def train_model(X_train, y_train, feature_names):
     ]
 
     model = lgb.train(
-        LGB_PARAMS,
+        lgb_params,
         dtrain,
         num_boost_round=NUM_BOOST_ROUND,
         callbacks=callbacks,
@@ -209,19 +212,29 @@ def main():
     feature_names = data["feature_names"]
     print()
 
-    # --- Step 2: モデル訓練 ---
-    print("Step 2: Training model...")
-    model, used_features = train_model(X_train, y_train, feature_names)
+    # --- Step 2: モデル訓練（3-seedアンサンブル） ---
+    print("Step 2: Training model ensemble (seeds=[42, 123, 456])...")
+    ENSEMBLE_SEEDS = [42, 123, 456]
+    all_test_scores = []
+    all_train_scores = []
+    used_features = None
+    for seed in ENSEMBLE_SEEDS:
+        params = dict(LGB_PARAMS)
+        params["seed"] = seed
+        model, used_features = train_model(X_train, y_train, feature_names, lgb_params=params)
+        all_test_scores.append(predict_scores(model, X_test, used_features))
+        all_train_scores.append(predict_scores(model, X_train, used_features))
+    test_scores = pd.concat(all_test_scores, axis=1).mean(axis=1)
+    test_scores.name = "score"
     print()
 
     # --- Step 3: 特徴量重要度 ---
-    print("Step 3: Feature importance")
+    print("Step 3: Feature importance (last seed)")
     print_feature_importance(model, used_features)
     print()
 
     # --- Step 4: テストデータで予測 ---
     print("Step 4: Predicting on test data...")
-    test_scores = predict_scores(model, X_test, used_features)
     print(f"  Test predictions: {len(test_scores)}")
     print()
 
@@ -243,7 +256,8 @@ def main():
 
     # --- Step 6: 訓練データでの評価（参考・過学習チェック） ---
     print("\n[Reference] Evaluation on train period:")
-    train_scores = predict_scores(model, X_train, used_features)
+    train_scores = pd.concat(all_train_scores, axis=1).mean(axis=1)
+    train_scores.name = "score"
     train_metrics = evaluate(
         predictions=train_scores,
         actuals=y_train,
