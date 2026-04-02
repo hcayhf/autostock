@@ -84,7 +84,8 @@ def train_model(X_train, y_train, feature_names):
         use_features = feature_names
 
     X = X_train[use_features].values
-    y = y_train.values
+    # ターゲットをクロスセクショナルランク（日付ごと）に変換
+    y = y_train.groupby(level="Date").rank(pct=True)
 
     # NaN を処理（LightGBMはNaN対応だがinf対策）
     X = np.nan_to_num(X, nan=np.nan, posinf=np.nan, neginf=np.nan)
