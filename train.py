@@ -38,7 +38,7 @@ LGB_PARAMS = {
     "objective": "regression",
     "metric": "mae",
     "boosting_type": "gbdt",
-    "num_leaves": 7,
+    "num_leaves": 4,
     "learning_rate": 0.01,
     "feature_fraction": 0.8,
     "bagging_fraction": 0.8,
