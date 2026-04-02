@@ -31,7 +31,7 @@ warnings.filterwarnings("ignore")
 FORWARD_DAYS = DEFAULT_FORWARD_DAYS  # ターゲット: N営業日後リターン
 TOP_N = DEFAULT_TOP_N                # 上位何銘柄を評価するか
 INCLUDE_SECTOR_REL = True            # セクター相対強度を含めるか
-PRIME_ONLY = True                    # メモリ制約: プライム銘柄のみ使用
+PRIME_ONLY = True                    # メモリ制約: プライム大型・中型のみ使用
 
 # LightGBM ハイパーパラメータ
 LGB_PARAMS = {
@@ -184,9 +184,12 @@ def main():
     tickers = None
     if PRIME_ONLY:
         universe = load_universe()
-        prime_tickers = universe[universe["market"] == "プライム（内国株式）"]["ticker"].tolist()
-        tickers = prime_tickers
-        print(f"  Using Prime only: {len(tickers)} tickers")
+        # メモリ制約: Large70 + Core30 + Mid400 のみ（約500銘柄）
+        large_mid_scales = ["TOPIX Large70", "TOPIX Core30", "TOPIX Mid400"]
+        prime_mask = universe["market"] == "プライム（内国株式）"
+        scale_mask = universe["scale"].isin(large_mid_scales)
+        tickers = universe[prime_mask & scale_mask]["ticker"].tolist()
+        print(f"  Using Prime Large+Mid only: {len(tickers)} tickers")
     data = get_train_test_split(
         forward_days=FORWARD_DAYS,
         tickers=tickers,
