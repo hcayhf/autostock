@@ -94,8 +94,8 @@ def train_model(X_train, y_train, feature_names, lgb_params=None):
     # 特徴量をクロスセクショナルランク化（日付ごと、外れ値耐性UP）
     X_ranked = X_train[use_features].groupby(level="Date").rank(pct=True)
     X = X_ranked.values
-    # ターゲットは生のリターン値（ランク変換なし）
-    y = y_train.values
+    # ターゲットをクリップ（±10%以上の外れ値を抑制）
+    y = y_train.values.clip(-0.10, 0.10)
 
     # NaN を処理（LightGBMはNaN対応だがinf対策）
     X = np.nan_to_num(X, nan=np.nan, posinf=np.nan, neginf=np.nan)
