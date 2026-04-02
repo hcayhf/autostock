@@ -30,7 +30,7 @@ warnings.filterwarnings("ignore")
 
 FORWARD_DAYS = DEFAULT_FORWARD_DAYS  # ターゲット: N営業日後リターン
 TOP_N = DEFAULT_TOP_N                # 上位何銘柄を評価するか
-INCLUDE_SECTOR_REL = True            # セクター相対強度を含めるか
+INCLUDE_SECTOR_REL = False           # セクター相対強度を除外
 PRIME_ONLY = True                    # メモリ制約: プライム大型・中型のみ使用
 
 # LightGBM ハイパーパラメータ
@@ -59,10 +59,10 @@ EARLY_STOPPING_ROUNDS = 50
 # ---------------------------------------------------------------------------
 
 # None = 全特徴量を使用。リストで指定すると選択的に使用
-# 上位7特徴量（imp>=2550）
+# セクター相対除外後の上位特徴量
 SELECTED_FEATURES = [
-    "volatility_60d", "low_60d_pct", "volatility_20d", "ret_60d_sector_rel",
-    "high_60d_pct", "ret_60d", "macd",
+    "volatility_60d", "low_60d_pct", "volatility_20d",
+    "high_60d_pct", "ret_60d", "macd", "bb_bandwidth",
 ]
 
 # ---------------------------------------------------------------------------
