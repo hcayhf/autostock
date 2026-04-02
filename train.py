@@ -46,6 +46,7 @@ LGB_PARAMS = {
     "min_child_samples": 20,
     "lambda_l1": 0.1,
     "lambda_l2": 0.1,
+    "min_gain_to_split": 0.01,
     "verbose": -1,
     "seed": 42,
     "n_jobs": -1,
