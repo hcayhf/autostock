@@ -80,7 +80,7 @@ NUM_BOOST_ROUND = 500  # Early Stopping なし
 ## 参考
 
 - [AutoResearch](https://github.com/karpathy/autoresearch) — Andrej Karpathy
-- [実験についてのブログ記事](#) — 詳細な考察・失敗事例はこちら
+- [実験についてのブログ記事](https://zenn.dev/yurelu/articles/636cf99d6e8864) — 詳細な考察・失敗事例はこちら
 
 ## 免責事項
 
