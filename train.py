@@ -217,7 +217,7 @@ def main():
 
     # --- Step 2: モデル訓練（多様なclipのアンサンブル） ---
     print("Step 2: Training model ensemble (clips=[0.06, 0.07, 0.08] x seed=42)...")
-    ENSEMBLE_CLIPS = [0.05, 0.06, 0.07, 0.08]
+    ENSEMBLE_CLIPS = [0.04, 0.05, 0.06, 0.07, 0.08]
     all_test_scores = []
     all_train_scores = []
     used_features = None
