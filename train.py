@@ -218,6 +218,7 @@ def main():
     # --- Step 2: モデル訓練（多様なclipのアンサンブル） ---
     print("Step 2: Training model ensemble (clips=[0.06, 0.07, 0.08] x seed=42)...")
     ENSEMBLE_CLIPS = [0.04, 0.05, 0.06, 0.07, 0.08]
+    ENSEMBLE_WEIGHTS = [1, 1, 2, 2, 1]  # clip=0.06,0.07に2倍の重み
     all_test_scores = []
     all_train_scores = []
     used_features = None
@@ -228,7 +229,9 @@ def main():
         model, used_features = train_model(X_train, y_train, feature_names, lgb_params=params)
         all_test_scores.append(predict_scores(model, X_test, used_features))
         all_train_scores.append(predict_scores(model, X_train, used_features))
-    test_scores = pd.concat(all_test_scores, axis=1).mean(axis=1)
+    test_scores = pd.concat(
+        [s * w for s, w in zip(all_test_scores, ENSEMBLE_WEIGHTS)], axis=1
+    ).sum(axis=1) / sum(ENSEMBLE_WEIGHTS)
     test_scores.name = "score"
     print()
 
@@ -260,7 +263,9 @@ def main():
 
     # --- Step 6: 訓練データでの評価（参考・過学習チェック） ---
     print("\n[Reference] Evaluation on train period:")
-    train_scores = pd.concat(all_train_scores, axis=1).mean(axis=1)
+    train_scores = pd.concat(
+        [s * w for s, w in zip(all_train_scores, ENSEMBLE_WEIGHTS)], axis=1
+    ).sum(axis=1) / sum(ENSEMBLE_WEIGHTS)
     train_scores.name = "score"
     train_metrics = evaluate(
         predictions=train_scores,
