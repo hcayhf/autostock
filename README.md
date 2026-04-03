@@ -119,6 +119,10 @@ train.py を修正（アーキテクチャ・HP変更）
 - AutoResearch リポジトリ: https://github.com/karpathy/autoresearch
 - 解説動画: https://www.youtube.com/watch?v=7t3zmNFkPnM
 
+## 免責事項
+
+本ソフトウェアは研究・教育目的で作成されたものであり、投資助言を目的としたものではありません。本ソフトウェアの利用によって生じた損害について、作者は一切の責任を負いません。投資判断はご自身の責任のもとで行ってください。
+
 ## 残タスク
 
 - [ ] データソースの選定・検証（yfinance で日本株が取れるか確認）
