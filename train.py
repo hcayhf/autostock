@@ -94,8 +94,9 @@ def train_model(X_train, y_train, feature_names, lgb_params=None):
     # 特徴量をクロスセクショナルランク化（日付ごと、外れ値耐性UP）
     X_ranked = X_train[use_features].groupby(level="Date").rank(pct=True)
     X = X_ranked.values
-    # ターゲットをクリップ（±7%以上の外れ値を抑制）
-    y = y_train.values.clip(-0.07, 0.07)
+    # ターゲットをクリップ（clip_valueで設定）
+    clip_value = lgb_params.get("_clip_value", 0.07)
+    y = y_train.values.clip(-clip_value, clip_value)
 
     # NaN を処理（LightGBMはNaN対応だがinf対策）
     X = np.nan_to_num(X, nan=np.nan, posinf=np.nan, neginf=np.nan)
@@ -122,8 +123,10 @@ def train_model(X_train, y_train, feature_names, lgb_params=None):
         lgb.log_evaluation(period=100),
     ]
 
+    # カスタムキー（_clip_value等）を除いてLGBMに渡す
+    lgb_params_clean = {k: v for k, v in lgb_params.items() if not k.startswith("_")}
     model = lgb.train(
-        lgb_params,
+        lgb_params_clean,
         dtrain,
         num_boost_round=NUM_BOOST_ROUND,
         callbacks=callbacks,
@@ -212,15 +215,16 @@ def main():
     feature_names = data["feature_names"]
     print()
 
-    # --- Step 2: モデル訓練（3-seedアンサンブル） ---
-    print("Step 2: Training model ensemble (seeds=[42, 123, 456])...")
-    ENSEMBLE_SEEDS = [42, 123, 456]
+    # --- Step 2: モデル訓練（多様なclipのアンサンブル） ---
+    print("Step 2: Training model ensemble (clips=[0.06, 0.07, 0.08] x seed=42)...")
+    ENSEMBLE_CLIPS = [0.06, 0.07, 0.08]
     all_test_scores = []
     all_train_scores = []
     used_features = None
-    for seed in ENSEMBLE_SEEDS:
+    for clip_val in ENSEMBLE_CLIPS:
         params = dict(LGB_PARAMS)
-        params["seed"] = seed
+        params["seed"] = 42
+        params["_clip_value"] = clip_val
         model, used_features = train_model(X_train, y_train, feature_names, lgb_params=params)
         all_test_scores.append(predict_scores(model, X_test, used_features))
         all_train_scores.append(predict_scores(model, X_train, used_features))
