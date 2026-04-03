@@ -94,6 +94,7 @@ def train_model(X_train, y_train, feature_names, lgb_params=None):
     # 特徴量をクロスセクショナルランク化（日付ごと、外れ値耐性UP）
     X_ranked = X_train[use_features].groupby(level="Date").rank(pct=True)
     X = X_ranked.values
+    extended_features = use_features
     # ターゲットをクリップ（clip_valueで設定）
     clip_value = lgb_params.get("_clip_value", 0.07)
     y = y_train.values.clip(-clip_value, clip_value)
@@ -217,8 +218,8 @@ def main():
 
     # --- Step 2: モデル訓練（多様なclipのアンサンブル） ---
     print("Step 2: Training model ensemble (clips=[0.06, 0.07, 0.08] x seed=42)...")
-    ENSEMBLE_CLIPS = [0.04, 0.05, 0.06, 0.07, 0.08]
-    ENSEMBLE_WEIGHTS = [1, 1, 2, 2, 1]  # clip=0.06,0.07に2倍の重み
+    ENSEMBLE_CLIPS = [0.04, 0.05, 0.06, 0.07, 0.08, 0.09]
+    ENSEMBLE_WEIGHTS = [1, 1, 2, 3, 1, 1]  # clip=0.06に2倍, 0.07に3倍の重み, 0.09追加
     all_test_scores = []
     all_train_scores = []
     used_features = None
