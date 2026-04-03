@@ -63,7 +63,7 @@ EARLY_STOPPING_ROUNDS = 50
 # セクター相対除外後の上位特徴量
 SELECTED_FEATURES = [
     "volatility_60d", "low_60d_pct", "volatility_20d",
-    "high_60d_pct", "ret_60d", "macd", "bb_bandwidth",
+    "high_60d_pct", "ret_60d",
 ]
 
 # ---------------------------------------------------------------------------
