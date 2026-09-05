@@ -1,0 +1,11 @@
+# アプリ本体
+pandas>=2.0
+numpy>=1.24
+yfinance>=0.2.30
+xlrd>=2.0          # JPX の data_j.xls (.xls 形式) 読み込み用
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# テスト
+pytest>=8.0
+httpx>=0.27        # fastapi.testclient が使う

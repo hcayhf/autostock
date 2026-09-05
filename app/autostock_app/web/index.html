@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoStock スクリーナー</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>AutoStock <span>スクリーナー</span></h1>
+  <div class="freshness" id="freshness">読み込み中…</div>
+</header>
+
+<div id="empty-notice" class="notice" hidden>
+  <strong>データがまだありません。</strong>
+  <code>python -m autostock_app.cli ingest daily</code> で実データを取り込むか、
+  <code>python -m autostock_app.cli demo-seed</code> で合成データを入れてください。
+</div>
+
+<main>
+  <aside class="panel">
+    <section>
+      <h2>プリセット</h2>
+      <div id="presets" class="presets"></div>
+    </section>
+
+    <section>
+      <h2>銘柄</h2>
+      <input type="search" id="text" placeholder="コード / 銘柄名で絞り込み">
+      <div id="categories" class="categories"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>指標の条件</h2>
+        <button type="button" id="add-range" class="ghost">+ 条件を追加</button>
+      </div>
+      <div id="ranges" class="ranges"></div>
+      <p class="hint" id="range-hint">条件を追加すると、その指標が欠損している銘柄は除外されます。</p>
+    </section>
+
+    <section>
+      <h2>並び替え</h2>
+      <div class="sort-row">
+        <select id="sort-by"></select>
+        <select id="sort-dir">
+          <option value="desc">降順</option>
+          <option value="asc">昇順</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="button" id="run" class="primary">検索</button>
+      <button type="button" id="reset" class="ghost">条件をクリア</button>
+    </div>
+  </aside>
+
+  <section class="results">
+    <div class="results-head">
+      <div id="summary" class="summary">条件を指定して検索してください</div>
+      <div class="pager">
+        <button type="button" id="prev" disabled>前へ</button>
+        <span id="page-info"></span>
+        <button type="button" id="next" disabled>次へ</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="table">
+        <thead><tr id="thead-row"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div id="detail" class="detail" hidden>
+  <div class="detail-inner">
+    <button type="button" id="detail-close" class="detail-close" aria-label="閉じる">×</button>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<footer>
+  <p>
+    本ツールは調査・学習用です。表示される数値は取得元データをそのまま計算したもので、
+    正確性を保証しません。投資判断はご自身の責任で行ってください。
+  </p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
